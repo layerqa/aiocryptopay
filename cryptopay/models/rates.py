@@ -3,7 +3,7 @@ from pydantic import BaseModel
 from typing import Union
 
 
-class ExchangeRates(BaseModel):
+class ExchangeRate(BaseModel):
     is_valid: bool
     source: str
     target: str
