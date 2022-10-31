@@ -5,9 +5,15 @@
  - TestNet - [@CryptoTestnetBot](http://t.me/CryptoTestnetBot)
 
 
+**Install**
+``` bash
+pip install aiocryptopay
+poetry add aiocryptopay
+```
+
 **Basic methods**
 ``` python
-from cryptopay import AioCryptoPay, Networks
+from aiocryptopay import AioCryptoPay, Networks
 
 api = AioCryptoPay(token='1337:JHigdsaASq', network=Networks.MAIN_NET)
 
@@ -21,7 +27,7 @@ print(profile, currencies, balance, rates, sep='\n')
 
 **Create and get invoice methods**
 ``` python
-from cryptopay import AioCryptoPay, Networks
+from aiocryptopay import AioCryptoPay, Networks
 
 api = AioCryptoPay(token='1337:JHigdsaASq', network=Networks.MAIN_NET)
 

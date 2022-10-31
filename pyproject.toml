@@ -1,13 +1,14 @@
 [tool.poetry]
-name = "aio-crypto-pay"
+name = "aiocryptopay"
 version = "0.1.0"
 description = "@cryptobot api asynchronous python wrapper"
 authors = ["layerqa"]
 license = "MIT"
 readme = "README.md"
-repository = "https://github.com/layerqa/aio-crypto-pay"
+repository = "https://github.com/layerqa/aiocryptopay"
 documentation = "https://help.crypt.bot/crypto-pay-api"
 keywords = [
+    "aiocryptopay",
     "cryptobot",
     "cryptopay",
     "cryptopay api",
