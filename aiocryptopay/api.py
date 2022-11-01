@@ -6,8 +6,15 @@ from .models.balance import Balance
 from .models.rates import ExchangeRate
 from .models.currencies import Currencie
 from .models.invoice import Invoice
+from .models.transfer import Transfer
+from .models.update import Update
 
+from hmac import HMAC
+from hashlib import sha256
 from typing import Optional, Union, List
+
+from aiohttp.web import Response
+from aiohttp.web_request import Request
 
 
 class AioCryptoPay(BaseClient):
@@ -33,6 +40,7 @@ class AioCryptoPay(BaseClient):
         self.__token = token
         self.network = network
         self.__headers = {'Crypto-Pay-API-Token': token}
+        self._handlers = []
     
     async def get_me(self) -> Profile:
         """
@@ -155,6 +163,8 @@ class AioCryptoPay(BaseClient):
         }
 
         for key, value in params.copy().items():
+            if type(value) == bool:
+                params[key] = str(value).lower()
             if value is None:
                 del params[key]
 
@@ -216,3 +226,93 @@ class AioCryptoPay(BaseClient):
             if invoice_ids and type(invoice_ids) == int:
                 return Invoice(**response['result']['items'][0])
             return [Invoice(**invoice) for invoice in response['result']['items']]
+    
+    async def transfer(
+        self,
+        user_id: int,
+        asset: Union[Assets, str],
+        amount: Union[int, float],
+        spend_id: Union[str, int],
+        comment: Optional[str] = None,
+        disable_send_notification: Optional[bool] = None
+    ) -> Transfer:
+        """
+        Use this method to send coins from your app's balance to a user. On success, returns object of completed transfer.
+        https://help.crypt.bot/crypto-pay-api#transfer
+
+        Args:
+            user_id (int): Telegram user ID. User must have previously used @CryptoBot (@CryptoTestnetBot for testnet).
+            asset (Union[Assets, str]): Currency code. Supported assets: “BTC”, “TON”, “ETH”, “USDT”, “USDC” and “BUSD”.
+            amount (Union[int, float]): Amount of the transfer in float.
+            spend_id (Union[str, int]): Unique ID to make your request idempotent and ensure that only one of the transfers with the same spend_id is accepted from your app.
+            comment (Optional[str], optional): Comment for the transfer. Users will see this comment when they receive a notification about the transfer.
+            disable_send_notification (Optional[bool], optional): Pass true if the user should not receive a notification about the transfer. Default is false.
+
+        Returns:
+            Transfer: Transfer object
+        """
+        method = HTTPMethods.GET
+        url = f'{self.network}/api/transfer'
+
+        params = {
+            'user_id': user_id,
+            'asset': asset,
+            'amount': amount,
+            'spend_id': spend_id,
+            'comment': comment,
+            'disable_send_notification': disable_send_notification
+        }
+
+        for key, value in params.copy().items():
+            if type(value) == bool:
+                params[key] = str(value).lower()
+            if value is None:
+                del params[key]
+
+        response = await self._make_request(
+            method=method,
+            url=url,
+            params=params,
+            headers=self.__headers
+        )
+        return Transfer(**response['result'])
+    
+    def check_signature(self, body_text: str, crypto_pay_signature: str) -> bool:
+        """
+        https://help.crypt.bot/crypto-pay-api#verifying-webhook-updates
+
+        Args:
+            body_text (str): webhook update body
+            crypto_pay_signature (str): Crypto-Pay-Api-Signature header
+
+        Returns:
+            bool: is cryptopay api signature
+        """
+        token = sha256(string=self.__token.encode('UTF-8')).digest()
+        signature = HMAC(key=token, msg=body_text.encode('UTF-8'), digestmod=sha256).hexdigest()
+        return signature == crypto_pay_signature
+    
+    async def get_updates(self, request: Request) -> Response:
+        """
+        WebHook updates route
+
+        Args:
+            request (Request): WebHook request
+
+        Returns:
+            Response: 200 status code for cryptopay api 
+        """
+        body = await request.json()
+        body_text = await request.text()
+        crypto_pay_signature = request.headers.get('Crypto-Pay-Api-Signature', 'No value')
+        signature = self.check_signature(body_text=body_text, crypto_pay_signature=crypto_pay_signature)
+        if signature == True:
+            for handler in self._handlers:
+                await handler(Update(**body))
+            return Response(text='Status OK!')
+    
+    def pay_handler(self, func = None):
+        def decorator(handler):
+            self._handlers.append(handler)
+            return handler
+        return decorator

@@ -37,3 +37,29 @@ print(invoice.pay_url)
 invoices = await api.get_invoices(invoice_ids=invoice.invoice_id)
 print(invoices.status)
 ```
+
+**WebHook usage**
+``` python
+from aiohttp import web
+
+from aiocryptopay import AioCryptoPay, Networks
+from aiocryptopay.models.update import Update
+
+
+web_app = web.Application()
+crypto = AioCryptoPay(token='1337:JHigdsaASq', network=Networks.MAIN_NET)
+
+
+@crypto.pay_handler()
+async def invoice_paid(update: Update) -> None:
+    print(update)
+
+async def create_invoice(app) -> None:
+    invoice = await crypto.create_invoice(asset='TON', amount=1.5)
+    print(invoice.pay_url)
+
+
+web_app.add_routes([web.post('/crypto-secret-path', crypto.get_updates)])
+web_app.on_startup.append(create_invoice)
+web.run_app(app=web_app, host='localhost', port=3001)
+```
