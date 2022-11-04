@@ -55,6 +55,12 @@ class BaseClient:
             raise CryptoPayAPIError(code, name)
         return response
     
-    def __del__(self):
-        if self._session:
-            self._loop.run_until_complete(self._session.close())
+    async def close(self):
+        '''Close the session graceful.'''
+        if not isinstance(self._session, ClientSession):
+            return
+
+        if self._session.closed:
+            return
+            
+        await self._session.close()

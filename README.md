@@ -15,12 +15,12 @@ poetry add aiocryptopay
 ``` python
 from aiocryptopay import AioCryptoPay, Networks
 
-api = AioCryptoPay(token='1337:JHigdsaASq', network=Networks.MAIN_NET)
+crypto = AioCryptoPay(token='1337:JHigdsaASq', network=Networks.MAIN_NET)
 
-profile = await api.get_me()
-currencies = await api.get_currencies()
-balance = await api.get_balance()
-rates = await api.get_exchange_rates()
+profile = await crypto.get_me()
+currencies = await crypto.get_currencies()
+balance = await crypto.get_balance()
+rates = await crypto.get_exchange_rates()
 
 print(profile, currencies, balance, rates, sep='\n')
 ```
@@ -29,12 +29,12 @@ print(profile, currencies, balance, rates, sep='\n')
 ``` python
 from aiocryptopay import AioCryptoPay, Networks
 
-api = AioCryptoPay(token='1337:JHigdsaASq', network=Networks.MAIN_NET)
+crypto = AioCryptoPay(token='1337:JHigdsaASq', network=Networks.MAIN_NET)
 
-invoice = await api.create_invoice(asset='TON', amount=1.5)
+invoice = await crypto.create_invoice(asset='TON', amount=1.5)
 print(invoice.pay_url)
 
-invoices = await api.get_invoices(invoice_ids=invoice.invoice_id)
+invoices = await crypto.get_invoices(invoice_ids=invoice.invoice_id)
 print(invoices.status)
 ```
 
@@ -58,8 +58,12 @@ async def create_invoice(app) -> None:
     invoice = await crypto.create_invoice(asset='TON', amount=1.5)
     print(invoice.pay_url)
 
+async def close_session(app) -> None:
+    await crypto.close()
+
 
 web_app.add_routes([web.post('/crypto-secret-path', crypto.get_updates)])
 web_app.on_startup.append(create_invoice)
+web_app.on_shutdown.append(close_session)
 web.run_app(app=web_app, host='localhost', port=3001)
 ```
