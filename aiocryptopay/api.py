@@ -18,30 +18,28 @@ from aiohttp.web_request import Request
 
 
 class AioCryptoPay(BaseClient):
-    '''
+    """
     CryptoPay API client.
         Consists of API methods only.
         All other methods are hidden in the BaseClient.
-    '''
+    """
 
-    API_DOCS = 'https://help.crypt.bot/crypto-pay-api'
+    API_DOCS = "https://help.crypt.bot/crypto-pay-api"
 
     def __init__(
-        self,
-        token: str,
-        network: Union[str, Networks] = Networks.MAIN_NET
+        self, token: str, network: Union[str, Networks] = Networks.MAIN_NET
     ) -> None:
         super().__init__()
-        '''
+        """
         Init CryptoPay API client
             :param token: Your API token from @CryptoBot
             :param network: Network address https://help.crypt.bot/crypto-pay-api#HYA3
-        '''
+        """
         self.__token = token
         self.network = network
-        self.__headers = {'Crypto-Pay-API-Token': token}
+        self.__headers = {"Crypto-Pay-API-Token": token}
         self._handlers = []
-    
+
     async def get_me(self) -> Profile:
         """
         Use this method to test your app's authentication token. Requires no parameters. On success, returns basic information about an app.
@@ -51,15 +49,13 @@ class AioCryptoPay(BaseClient):
             Profile: App profile
         """
         method = HTTPMethods.GET
-        url = f'{self.network}/api/getMe'
+        url = f"{self.network}/api/getMe"
 
         response = await self._make_request(
-            method=method,
-            url=url,
-            headers=self.__headers
+            method=method, url=url, headers=self.__headers
         )
-        return Profile(**response['result'])
-    
+        return Profile(**response["result"])
+
     async def get_balance(self) -> List[Balance]:
         """
         Use this method to get a balance of your app. Returns array of assets.
@@ -69,15 +65,13 @@ class AioCryptoPay(BaseClient):
             List[Balance]: Balances in list
         """
         method = HTTPMethods.GET
-        url = f'{self.network}/api/getBalance'
+        url = f"{self.network}/api/getBalance"
 
         response = await self._make_request(
-            method=method,
-            url=url,
-            headers=self.__headers
+            method=method, url=url, headers=self.__headers
         )
-        return [Balance(**balance) for balance in response['result']]
-    
+        return [Balance(**balance) for balance in response["result"]]
+
     async def get_exchange_rates(self) -> List[ExchangeRate]:
         """
         Use this method to get exchange rates of supported currencies. Returns array of currencies.
@@ -87,15 +81,13 @@ class AioCryptoPay(BaseClient):
             List[ExchangeRates]: ExchangeRates in list
         """
         method = HTTPMethods.GET
-        url = f'{self.network}/api/getExchangeRates'
+        url = f"{self.network}/api/getExchangeRates"
 
         response = await self._make_request(
-            method=method,
-            url=url,
-            headers=self.__headers
+            method=method, url=url, headers=self.__headers
         )
-        return [ExchangeRate(**rate) for rate in response['result']]
-    
+        return [ExchangeRate(**rate) for rate in response["result"]]
+
     async def get_currencies(self) -> List[Currencie]:
         """
         Use this method to get a list of supported currencies. Returns array of currencies.
@@ -105,15 +97,13 @@ class AioCryptoPay(BaseClient):
             List[Currencies]: Currencies in list
         """
         method = HTTPMethods.GET
-        url = f'{self.network}/api/getCurrencies'
+        url = f"{self.network}/api/getCurrencies"
 
         response = await self._make_request(
-            method=method,
-            url=url,
-            headers=self.__headers
+            method=method, url=url, headers=self.__headers
         )
-        return [Currencie(**currency) for currency in response['result']]
-    
+        return [Currencie(**currency) for currency in response["result"]]
+
     async def create_invoice(
         self,
         asset: Union[Assets, str],
@@ -125,7 +115,7 @@ class AioCryptoPay(BaseClient):
         payload: Optional[str] = None,
         allow_comments: Optional[bool] = None,
         allow_anonymous: Optional[bool] = None,
-        expires_in: Optional[int] = None
+        expires_in: Optional[int] = None,
     ) -> Invoice:
         """
         Use this method to create a new invoice. On success, returns an object of the created invoice.
@@ -147,42 +137,39 @@ class AioCryptoPay(BaseClient):
             Invoice: Invoice object
         """
         method = HTTPMethods.GET
-        url = f'{self.network}/api/createInvoice'
+        url = f"{self.network}/api/createInvoice"
 
         params = {
-            'asset': asset,
-            'amount': amount,
-            'description': description,
-            'hidden_message': hidden_message,
-            'paid_btn_name': paid_btn_name,
-            'paid_btn_url': paid_btn_url,
-            'payload': payload,
-            'allow_comments': allow_comments,
-            'allow_anonymous': allow_anonymous,
-            'expires_in': expires_in
+            "asset": asset,
+            "amount": amount,
+            "description": description,
+            "hidden_message": hidden_message,
+            "paid_btn_name": paid_btn_name,
+            "paid_btn_url": paid_btn_url,
+            "payload": payload,
+            "allow_comments": allow_comments,
+            "allow_anonymous": allow_anonymous,
+            "expires_in": expires_in,
         }
 
         for key, value in params.copy().items():
-            if type(value) == bool:
+            if isinstance(value, bool):
                 params[key] = str(value).lower()
             if value is None:
                 del params[key]
 
         response = await self._make_request(
-            method=method,
-            url=url,
-            params=params,
-            headers=self.__headers
+            method=method, url=url, params=params, headers=self.__headers
         )
-        return Invoice(**response['result'])
-    
+        return Invoice(**response["result"])
+
     async def get_invoices(
         self,
         asset: Optional[Union[Assets, str]] = None,
         invoice_ids: Optional[Union[List[int], int]] = None,
         status: Optional[Union[InvoiceStatus, str]] = None,
         offset: Optional[int] = None,
-        count: Optional[int] = None
+        count: Optional[int] = None,
     ) -> Optional[Union[Invoice, List[Invoice]]]:
         """
         Use this method to get invoices of your app. On success, returns array of invoices.
@@ -199,17 +186,17 @@ class AioCryptoPay(BaseClient):
             Optional[Union[Invoice, List[Invoice]]]: Invoice object or list of Invoices
         """
         method = HTTPMethods.GET
-        url = f'{self.network}/api/getInvoices'
+        url = f"{self.network}/api/getInvoices"
 
         if invoice_ids and type(invoice_ids) == list:
-            invoice_ids = ','.join(map(str, invoice_ids))
+            invoice_ids = ",".join(map(str, invoice_ids))
 
         params = {
-            'asset': asset,
-            'invoice_ids': invoice_ids,
-            'status': status,
-            'offset': offset,
-            'count': count
+            "asset": asset,
+            "invoice_ids": invoice_ids,
+            "status": status,
+            "offset": offset,
+            "count": count,
         }
 
         for key, value in params.copy().items():
@@ -217,16 +204,13 @@ class AioCryptoPay(BaseClient):
                 del params[key]
 
         response = await self._make_request(
-            method=method,
-            url=url,
-            params=params,
-            headers=self.__headers
+            method=method, url=url, params=params, headers=self.__headers
         )
-        if len(response['result']['items']) > 0:
-            if invoice_ids and type(invoice_ids) == int:
-                return Invoice(**response['result']['items'][0])
-            return [Invoice(**invoice) for invoice in response['result']['items']]
-    
+        if len(response["result"]["items"]) > 0:
+            if invoice_ids and isinstance(invoice_ids, int):
+                return Invoice(**response["result"]["items"][0])
+            return [Invoice(**invoice) for invoice in response["result"]["items"]]
+
     async def transfer(
         self,
         user_id: int,
@@ -234,7 +218,7 @@ class AioCryptoPay(BaseClient):
         amount: Union[int, float],
         spend_id: Union[str, int],
         comment: Optional[str] = None,
-        disable_send_notification: Optional[bool] = None
+        disable_send_notification: Optional[bool] = None,
     ) -> Transfer:
         """
         Use this method to send coins from your app's balance to a user. On success, returns object of completed transfer.
@@ -252,31 +236,28 @@ class AioCryptoPay(BaseClient):
             Transfer: Transfer object
         """
         method = HTTPMethods.GET
-        url = f'{self.network}/api/transfer'
+        url = f"{self.network}/api/transfer"
 
         params = {
-            'user_id': user_id,
-            'asset': asset,
-            'amount': amount,
-            'spend_id': spend_id,
-            'comment': comment,
-            'disable_send_notification': disable_send_notification
+            "user_id": user_id,
+            "asset": asset,
+            "amount": amount,
+            "spend_id": spend_id,
+            "comment": comment,
+            "disable_send_notification": disable_send_notification,
         }
 
         for key, value in params.copy().items():
-            if type(value) == bool:
+            if isinstance(value, bool):
                 params[key] = str(value).lower()
             if value is None:
                 del params[key]
 
         response = await self._make_request(
-            method=method,
-            url=url,
-            params=params,
-            headers=self.__headers
+            method=method, url=url, params=params, headers=self.__headers
         )
-        return Transfer(**response['result'])
-    
+        return Transfer(**response["result"])
+
     def check_signature(self, body_text: str, crypto_pay_signature: str) -> bool:
         """
         https://help.crypt.bot/crypto-pay-api#verifying-webhook-updates
@@ -288,10 +269,12 @@ class AioCryptoPay(BaseClient):
         Returns:
             bool: is cryptopay api signature
         """
-        token = sha256(string=self.__token.encode('UTF-8')).digest()
-        signature = HMAC(key=token, msg=body_text.encode('UTF-8'), digestmod=sha256).hexdigest()
+        token = sha256(string=self.__token.encode("UTF-8")).digest()
+        signature = HMAC(
+            key=token, msg=body_text.encode("UTF-8"), digestmod=sha256
+        ).hexdigest()
         return signature == crypto_pay_signature
-    
+
     async def get_updates(self, request: Request) -> Response:
         """
         WebHook updates route
@@ -300,19 +283,24 @@ class AioCryptoPay(BaseClient):
             request (Request): WebHook request
 
         Returns:
-            Response: 200 status code for cryptopay api 
+            Response: 200 status code for cryptopay api
         """
         body = await request.json()
         body_text = await request.text()
-        crypto_pay_signature = request.headers.get('Crypto-Pay-Api-Signature', 'No value')
-        signature = self.check_signature(body_text=body_text, crypto_pay_signature=crypto_pay_signature)
+        crypto_pay_signature = request.headers.get(
+            "Crypto-Pay-Api-Signature", "No value"
+        )
+        signature = self.check_signature(
+            body_text=body_text, crypto_pay_signature=crypto_pay_signature
+        )
         if signature == True:
             for handler in self._handlers:
                 await handler(Update(**body))
-            return Response(text='Status OK!')
-    
-    def pay_handler(self, func = None):
+            return Response(text="Status OK!")
+
+    def pay_handler(self, func=None):
         def decorator(handler):
             self._handlers.append(handler)
             return handler
+
         return decorator

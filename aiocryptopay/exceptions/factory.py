@@ -3,7 +3,7 @@ from typing import Optional, Type, Union
 
 
 class CodeErrorFactory(Exception):
-    '''CryptoPay API Exception'''
+    """CryptoPay API Exception"""
 
     def __init__(self, code: int = None, name: str = None) -> None:
         self.code = int(code) if code else None
@@ -34,16 +34,14 @@ class CodeErrorFactory(Exception):
         return type(catch_exc_classname, (cls,), {})
 
     @classmethod
-    def exception_to_raise(
-        cls, code: int, name: str
-    ) -> "CodeErrorFactory":
-        """ Returns an error with error code and error_name"""
+    def exception_to_raise(cls, code: int, name: str) -> "CodeErrorFactory":
+        """Returns an error with error code and error_name"""
         exception_type = type(cls.generate_exc_classname(code), (cls,), {})
         return exception_type(code, name)
 
     @classmethod
     def generate_exc_classname(cls, code: Optional[int]) -> str:
-        """ Generates unique exception classname based on error code """
+        """Generates unique exception classname based on error code"""
         return f"{cls.__name__}_{code}"
 
     def __str__(self):
