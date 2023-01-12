@@ -22,7 +22,7 @@ class BaseClient:
         self._loop = asyncio.get_event_loop()
         self._session: Optional[ClientSession] = None
 
-    def get_session(self):
+    def get_session(self, **kwargs):
         """Get cached session. One session per instance."""
         if isinstance(self._session, ClientSession) and not self._session.closed:
             return self._session
@@ -30,7 +30,7 @@ class BaseClient:
         ssl_context = ssl.create_default_context(cafile=certifi.where())
         connector = TCPConnector(ssl=ssl_context)
 
-        self._session = ClientSession(connector=connector)
+        self._session = ClientSession(connector=connector, **kwargs)
         return self._session
 
     async def _make_request(self, method: str, url: StrOrURL, **kwargs) -> dict:
@@ -41,7 +41,7 @@ class BaseClient:
             :param kwargs: data, params, json and other...
             :return: status and result or exception
         """
-        session = self.get_session()
+        session = self.get_session(**kwargs)
 
         async with session.request(method, url, **kwargs) as response:
             response = await response.json(content_type="application/json")
