@@ -41,7 +41,7 @@ class BaseClient:
             :param kwargs: data, params, json and other...
             :return: status and result or exception
         """
-        session = self.get_session(**kwargs)
+        session = self.get_session()
 
         async with session.request(method, url, **kwargs) as response:
             response = await response.json(content_type="application/json")
