@@ -15,7 +15,7 @@ class CodeErrorFactory(Exception):
         cls, code: Optional[int] = None, name: Optional[int] = None
     ) -> Union["CodeErrorFactory", Type["CodeErrorFactory"]]:
         if name:
-            return cls.exception_to_raise(code, name)
+            return cls.exception_to_raise(code, str(name))
         return cls.exception_to_handle(code)
 
     @classmethod

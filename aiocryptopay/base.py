@@ -47,9 +47,10 @@ class BaseClient:
             response = await response.json(content_type="application/json")
         return self._validate_response(response)
 
-    def _validate_response(self, response: dict) -> dict:
+    @staticmethod
+    def _validate_response(response: dict) -> dict:
         """Validate response"""
-        if response.get("ok") == False:
+        if not response.get("ok"):
             name = response["error"]["name"]
             code = response["error"]["code"]
             raise CryptoPayAPIError(code, name)
