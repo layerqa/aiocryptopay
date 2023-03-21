@@ -4,7 +4,7 @@ from .const import HTTPMethods, Networks, Assets, PaidButtons, InvoiceStatus
 from .models.profile import Profile
 from .models.balance import Balance
 from .models.rates import ExchangeRate
-from .models.currencies import Currencie
+from .models.currencies import Currency
 from .models.invoice import Invoice
 from .models.transfer import Transfer
 from .models.update import Update
@@ -88,7 +88,7 @@ class AioCryptoPay(BaseClient):
         )
         return [ExchangeRate(**rate) for rate in response["result"]]
 
-    async def get_currencies(self) -> List[Currencie]:
+    async def get_currencies(self) -> List[Currency]:
         """
         Use this method to get a list of supported currencies. Returns array of currencies.
         https://help.crypt.bot/crypto-pay-api#getCurrencies
@@ -102,7 +102,7 @@ class AioCryptoPay(BaseClient):
         response = await self._make_request(
             method=method, url=url, headers=self.__headers
         )
-        return [Currencie(**currency) for currency in response["result"]]
+        return [Currency(**currency) for currency in response["result"]]
 
     async def create_invoice(
             self,
