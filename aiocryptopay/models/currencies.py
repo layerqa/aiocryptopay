@@ -3,7 +3,7 @@ from pydantic import BaseModel
 from typing import Optional
 
 
-class Currencie(BaseModel):
+class Currency(BaseModel):
     is_blockchain: bool
     is_stablecoin: bool
     is_fiat: bool

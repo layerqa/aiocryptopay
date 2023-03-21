@@ -24,6 +24,11 @@ class Assets(str, Enum):
     USDT = "USDT"
     USDC = "USDC"
     BUSD = "BUSD"
+    BNB = "BNB"
+
+    @classmethod
+    def values(cls):
+        return list(map(lambda asset: asset.value, cls))
 
 
 class PaidButtons(str, Enum):
