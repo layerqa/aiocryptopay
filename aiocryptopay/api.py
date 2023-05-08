@@ -27,7 +27,7 @@ class AioCryptoPay(BaseClient):
     API_DOCS = "https://help.crypt.bot/crypto-pay-api"
 
     def __init__(
-            self, token: str, network: Union[str, Networks] = Networks.MAIN_NET
+        self, token: str, network: Union[str, Networks] = Networks.MAIN_NET
     ) -> None:
         super().__init__()
         """
@@ -105,17 +105,17 @@ class AioCryptoPay(BaseClient):
         return [Currency(**currency) for currency in response["result"]]
 
     async def create_invoice(
-            self,
-            asset: Union[Assets, str],
-            amount: Union[int, float],
-            description: Optional[str] = None,
-            hidden_message: Optional[str] = None,
-            paid_btn_name: Optional[Union[PaidButtons, str]] = None,
-            paid_btn_url: Optional[str] = None,
-            payload: Optional[str] = None,
-            allow_comments: Optional[bool] = None,
-            allow_anonymous: Optional[bool] = None,
-            expires_in: Optional[int] = None,
+        self,
+        asset: Union[Assets, str],
+        amount: Union[int, float],
+        description: Optional[str] = None,
+        hidden_message: Optional[str] = None,
+        paid_btn_name: Optional[Union[PaidButtons, str]] = None,
+        paid_btn_url: Optional[str] = None,
+        payload: Optional[str] = None,
+        allow_comments: Optional[bool] = None,
+        allow_anonymous: Optional[bool] = None,
+        expires_in: Optional[int] = None,
     ) -> Invoice:
         """
         Use this method to create a new invoice. On success, returns an object of the created invoice.
@@ -164,12 +164,12 @@ class AioCryptoPay(BaseClient):
         return Invoice(**response["result"])
 
     async def get_invoices(
-            self,
-            asset: Optional[Union[Assets, str]] = None,
-            invoice_ids: Optional[Union[List[int], int]] = None,
-            status: Optional[Union[InvoiceStatus, str]] = None,
-            offset: Optional[int] = None,
-            count: Optional[int] = None,
+        self,
+        asset: Optional[Union[Assets, str]] = None,
+        invoice_ids: Optional[Union[List[int], int]] = None,
+        status: Optional[Union[InvoiceStatus, str]] = None,
+        offset: Optional[int] = None,
+        count: Optional[int] = None,
     ) -> Optional[Union[Invoice, List[Invoice]]]:
         """
         Use this method to get invoices of your app. On success, returns array of invoices.
@@ -212,13 +212,13 @@ class AioCryptoPay(BaseClient):
             return [Invoice(**invoice) for invoice in response["result"]["items"]]
 
     async def transfer(
-            self,
-            user_id: int,
-            asset: Union[Assets, str],
-            amount: Union[int, float],
-            spend_id: Union[str, int],
-            comment: Optional[str] = None,
-            disable_send_notification: Optional[bool] = None,
+        self,
+        user_id: int,
+        asset: Union[Assets, str],
+        amount: Union[int, float],
+        spend_id: Union[str, int],
+        comment: Optional[str] = None,
+        disable_send_notification: Optional[bool] = None,
     ) -> Transfer:
         """
         Use this method to send coins from your app's balance to a user. On success, returns object of completed transfer.
