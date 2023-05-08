@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "aiocryptopay"
-version = "0.2.6"
+version = "0.2.7"
 description = "@cryptobot api asynchronous python wrapper"
 authors = ["layerqa"]
 license = "MIT"
@@ -18,8 +18,9 @@ keywords = [
 [tool.poetry.dependencies]
 python = "^3.8"
 aiohttp = "^3.8.3"
-certifi = "^2022.9.14"
-pydantic = "^1.10.2"
+certifi = "^2023.5.7"
+pydantic = "^1.10.7"
+strenum = "^0.4.10"
 
 [tool.poetry.dev-dependencies]
 aiogram = "^2.22.2"

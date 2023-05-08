@@ -144,7 +144,7 @@ class AioCryptoPay(BaseClient):
             "amount": amount,
             "description": description,
             "hidden_message": hidden_message,
-            "paid_btn_name": paid_btn_name.value if isinstance(paid_btn_name, PaidButtons) else paid_btn_name,
+            "paid_btn_name": paid_btn_name,
             "paid_btn_url": paid_btn_url,
             "payload": payload,
             "allow_comments": allow_comments,
@@ -194,7 +194,7 @@ class AioCryptoPay(BaseClient):
         params = {
             "asset": asset,
             "invoice_ids": invoice_ids,
-            "status": status.value if isinstance(status, InvoiceStatus) else status,
+            "status": status,
             "offset": offset,
             "count": count,
         }

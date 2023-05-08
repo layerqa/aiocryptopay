@@ -1,21 +1,21 @@
-from enum import Enum
+from strenum import StrEnum
 
 
-class HTTPMethods(str, Enum):
+class HTTPMethods(StrEnum):
     """Available HTTP methods."""
 
     POST = "POST"
     GET = "GET"
 
 
-class Networks(str, Enum):
+class Networks(StrEnum):
     """Cryptobot networks"""
 
     MAIN_NET = "https://pay.crypt.bot"
     TEST_NET = "https://testnet-pay.crypt.bot"
 
 
-class Assets(str, Enum):
+class Assets(StrEnum):
     """Cryptobot assets"""
 
     BTC = "BTC"
@@ -31,7 +31,7 @@ class Assets(str, Enum):
         return list(map(lambda asset: asset.value, cls))
 
 
-class PaidButtons(str, Enum):
+class PaidButtons(StrEnum):
     """Cryptobot paid button names"""
 
     VIEW_ITEM = "viewItem"
@@ -40,7 +40,7 @@ class PaidButtons(str, Enum):
     CALLBACK = "callback"
 
 
-class InvoiceStatus(str, Enum):
+class InvoiceStatus(StrEnum):
     """Invoice status"""
 
     ACTIVE = "active"
