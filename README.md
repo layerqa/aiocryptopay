@@ -51,7 +51,7 @@ crypto = AioCryptoPay(token='1337:JHigdsaASq', network=Networks.MAIN_NET)
 
 
 @crypto.pay_handler()
-async def invoice_paid(update: Update) -> None:
+async def invoice_paid(update: Update, app) -> None:
     print(update)
 
 async def create_invoice(app) -> None:
