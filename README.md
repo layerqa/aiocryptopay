@@ -36,6 +36,11 @@ print(invoice.pay_url)
 
 invoices = await crypto.get_invoices(invoice_ids=invoice.invoice_id)
 print(invoices.status)
+
+# Get amount in crypto by fiat summ
+amount = await crypto.get_amount_by_fiat(summ=100, asset='TON', target='USD')
+invoice = await crypto.create_invoice(asset='TON', amount=amount)
+print(invoice.pay_url)
 ```
 
 **WebHook usage**

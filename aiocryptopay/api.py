@@ -9,6 +9,8 @@ from .models.invoice import Invoice
 from .models.transfer import Transfer
 from .models.update import Update
 
+from .utils.exchange import get_rate, get_rate_summ
+
 from hmac import HMAC
 from hashlib import sha256
 from typing import Optional, Union, List, Callable
@@ -297,6 +299,24 @@ class AioCryptoPay(BaseClient):
             for handler in self._handlers:
                 await handler(Update(**body), request.app)
             return Response(text="Status OK!")
+
+    async def get_amount_by_fiat(
+        self, summ: Union[int, float], asset: Union[Assets, str], target: str
+    ) -> Union[int, float]:
+        """Get amount in crypto by fiat summ
+
+        Args:
+            summ (Union[int, float]): Summ in fiat.
+            asset (Union[Assets, str]): Crypto currency code.
+            target (str): Fiat currency code.
+
+        Returns:
+            Union[int, float]: Amount in crypto
+        """
+        rates = await self.get_exchange_rates()
+        rate = get_rate(source=asset, target=target, rates=rates)
+        fiat_summ = get_rate_summ(summ=summ, rate=rate)
+        return fiat_summ
 
     def register_pay_handler(self, func: Callable) -> None:
         """

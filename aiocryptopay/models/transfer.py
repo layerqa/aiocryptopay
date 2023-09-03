@@ -13,4 +13,4 @@ class Transfer(BaseModel):
     amount: Union[int, float]
     status: str
     completed_at: datetime
-    comment: Optional[str]
+    comment: Optional[str] = None

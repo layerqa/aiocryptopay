@@ -9,5 +9,5 @@ class Currency(BaseModel):
     is_fiat: bool
     name: str
     code: str
-    url: Optional[str]
+    url: Optional[str] = None
     decimals: int

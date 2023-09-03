@@ -19,8 +19,8 @@ keywords = [
 python = "^3.8"
 aiohttp = "^3.8.3"
 certifi = "^2023.5.7"
-pydantic = "^1.10.7"
 strenum = "^0.4.10"
+pydantic = "2.3.0"
 
 [tool.poetry.group.dev.dependencies]
 black = "^22.10.0"
