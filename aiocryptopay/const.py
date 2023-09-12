@@ -23,7 +23,6 @@ class Assets(StrEnum):
     ETH = "ETH"
     USDT = "USDT"
     USDC = "USDC"
-    BUSD = "BUSD"
     BNB = "BNB"
     TRX = "TRX"
 
