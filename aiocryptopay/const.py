@@ -25,6 +25,7 @@ class Assets(StrEnum):
     USDC = "USDC"
     BNB = "BNB"
     TRX = "TRX"
+    LTC = "LTC"
 
     @classmethod
     def values(cls):
