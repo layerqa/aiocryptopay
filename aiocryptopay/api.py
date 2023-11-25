@@ -1,5 +1,13 @@
 from .base import BaseClient
-from .const import HTTPMethods, Networks, Assets, PaidButtons, InvoiceStatus
+from .const import (
+    HTTPMethods,
+    Networks,
+    Assets,
+    PaidButtons,
+    InvoiceStatus,
+    CurrencyType,
+    CheckStatus,
+)
 
 from .models.profile import Profile
 from .models.balance import Balance
@@ -8,6 +16,7 @@ from .models.currencies import Currency
 from .models.invoice import Invoice
 from .models.transfer import Transfer
 from .models.update import Update
+from .models.check import Check
 
 from .utils.exchange import get_rate, get_rate_summ
 
@@ -60,7 +69,7 @@ class AioCryptoPay(BaseClient):
 
     async def get_balance(self) -> List[Balance]:
         """
-        Use this method to get a balance of your app. Returns array of assets.
+        Use this method to get a balance of your app.
         https://help.crypt.bot/crypto-pay-api#getBalance
 
         Returns:
@@ -108,8 +117,8 @@ class AioCryptoPay(BaseClient):
 
     async def create_invoice(
         self,
-        asset: Union[Assets, str],
         amount: Union[int, float],
+        asset: Optional[Union[Assets, str]] = None,
         description: Optional[str] = None,
         hidden_message: Optional[str] = None,
         paid_btn_name: Optional[Union[PaidButtons, str]] = None,
@@ -118,13 +127,16 @@ class AioCryptoPay(BaseClient):
         allow_comments: Optional[bool] = None,
         allow_anonymous: Optional[bool] = None,
         expires_in: Optional[int] = None,
+        fiat: Optional[str] = None,
+        currency_type: Optional[Union[CurrencyType, str]] = None,
+        accepted_assets: Optional[Union[List[Union[Assets, str]], str]] = None,
     ) -> Invoice:
         """
-        Use this method to create a new invoice. On success, returns an object of the created invoice.
+        Use this method to create a new invoice.
         https://help.crypt.bot/crypto-pay-api#createInvoice
 
         Args:
-            asset (Union[Assets, str]): Currency code. Supported assets: “BTC”, “TON”, “ETH”, “USDT”, “USDC” and “BUSD”.
+            asset (Optional[Union[Assets, str]]): Currency code if the field currency_type has crypto as a value. Supported assets: “USDT”, “TON”, “BTC”, “ETH”, “LTC”, “BNB”, “TRX” and “USDC”.
             amount (Union[int, float]): Amount of the invoice in float or int. For example: 125.50
             description (Optional[str], optional): Description for the invoice. User will see this description when they pay the invoice. Up to 1024 characters.
             hidden_message (Optional[str], optional): Text of the message that will be shown to a user after the invoice is paid. Up to 2o48 characters.
@@ -134,12 +146,18 @@ class AioCryptoPay(BaseClient):
             allow_comments (Optional[bool], optional): Allow a user to add a comment to the payment. Default is true.
             allow_anonymous (Optional[bool], optional): Allow a user to pay the invoice anonymously. Default is true.
             expires_in (Optional[int], optional): You can set a payment time limit for the invoice in seconds. Values between 1-2678400 are accepted.
+            fiat (Optional[str], optional): Fiat currency code if the field currency_type has fiat as a value. Supported fiat currencies: All fiats in CryptoBot
+            currency_type (Optional[Union[CurrencyType, str]], optional): Type of the price, can be “crypto” or “fiat”. Default is crypto.
+            accepted_assets (Optional[Union[List[Union[Assets, str]], str]], optional): Assets which can be used to pay the invoice if the field fiat has a value. Supported assets: “USDT”, “TON”, “BTC” (and “JET” for testnet). Defaults to all currencies.
 
         Returns:
             Invoice: Invoice object
         """
         method = HTTPMethods.GET
         url = f"{self.network}/api/createInvoice"
+
+        if accepted_assets and type(accepted_assets) == list:
+            accepted_assets = ",".join(map(str, accepted_assets))
 
         params = {
             "asset": asset,
@@ -152,6 +170,9 @@ class AioCryptoPay(BaseClient):
             "allow_comments": allow_comments,
             "allow_anonymous": allow_anonymous,
             "expires_in": expires_in,
+            "fiat": fiat,
+            "currency_type": currency_type,
+            "accepted_assets": accepted_assets,
         }
 
         for key, value in params.copy().items():
@@ -174,11 +195,11 @@ class AioCryptoPay(BaseClient):
         count: Optional[int] = None,
     ) -> Optional[Union[Invoice, List[Invoice]]]:
         """
-        Use this method to get invoices of your app. On success, returns array of invoices.
+        Use this method to get invoices of your app.
         https://help.crypt.bot/crypto-pay-api#getInvoices
 
         Args:
-            asset (Optional[Union[Assets, str]], optional): Currency codes separated by comma. Supported assets: “BTC”, “TON”, “ETH”, “USDT”, “USDC” and “BUSD”. Defaults to all assets.
+            asset (Optional[Union[Assets, str]], optional): Cryptocurrency alphabetic code. Supported assets: “USDT”, “TON”, “BTC”, “ETH”, “LTC”, “BNB”, “TRX” and “USDC” (and “JET” for testnet). Defaults to all currencies.
             invoice_ids (Optional[Union[List[int], int]], optional): Invoice IDs separated by comma (list in python).
             status (Optional[Union[InvoiceStatus, str]], optional): Status of invoices to be returned. Available statuses: “active” and “paid”. Defaults to all statuses.
             offset (Optional[int], optional): Offset needed to return a specific subset of invoices. Default is 0.
@@ -213,6 +234,27 @@ class AioCryptoPay(BaseClient):
                 return Invoice(**response["result"]["items"][0])
             return [Invoice(**invoice) for invoice in response["result"]["items"]]
 
+    async def delete_invoice(self, invoice_id: int) -> bool:
+        """
+        Use this method to delete invoices created by your app.
+        http://help.crypt.bot/crypto-pay-api#34Hd
+
+        Args:
+            invoice_id (int): Invoice ID to be deleted.
+
+        Returns:
+            bool: Returns True on success.
+        """
+        method = HTTPMethods.GET
+        url = f"{self.network}/api/deleteInvoice"
+
+        params = {"invoice_id": invoice_id}
+
+        response = await self._make_request(
+            method=method, url=url, params=params, headers=self.__headers
+        )
+        return response["result"]
+
     async def transfer(
         self,
         user_id: int,
@@ -223,7 +265,7 @@ class AioCryptoPay(BaseClient):
         disable_send_notification: Optional[bool] = None,
     ) -> Transfer:
         """
-        Use this method to send coins from your app's balance to a user. On success, returns object of completed transfer.
+        Use this method to send coins from your app's balance to a user.
         https://help.crypt.bot/crypto-pay-api#transfer
 
         Args:
@@ -259,6 +301,152 @@ class AioCryptoPay(BaseClient):
             method=method, url=url, params=params, headers=self.__headers
         )
         return Transfer(**response["result"])
+
+    async def get_transfers(
+        self,
+        asset: Optional[Union[Assets, str]] = None,
+        transfer_ids: Optional[Union[List[int], int]] = None,
+        offset: Optional[int] = None,
+        count: Optional[int] = None,
+    ) -> Optional[Union[Transfer, List[Transfer]]]:
+        """
+        Use this method to get transfers created by your app.
+        http://help.crypt.bot/crypto-pay-api#RjDU
+
+        Args:
+            asset (Optional[Union[Assets, str]], optional): Currency codes separated by comma. Supported assets: “BTC”, “TON”, “ETH”, “USDT”, “USDC” and “BUSD”. Defaults to all assets.
+            transfer_ids (Optional[Union[List[int], int]], optional): List of transfer IDs separated by comma (list in python).
+            offset (Optional[int], optional): Offset needed to return a specific subset of invoices. Default is 0.
+            count (Optional[int], optional): Number of invoices to be returned. Values between 1-1000 are accepted. Default is 100.
+
+        Returns:
+            Optional[Union[Transfer, List[Transfer]]]: Transfer object or list of Transfers
+        """
+        method = HTTPMethods.GET
+        url = f"{self.network}/api/getTransfers"
+
+        if transfer_ids and type(transfer_ids) == list:
+            transfer_ids = ",".join(map(str, transfer_ids))
+
+        params = {
+            "asset": asset,
+            "transfer_ids": transfer_ids,
+            "offset": offset,
+            "count": count,
+        }
+
+        for key, value in params.copy().items():
+            if value is None:
+                del params[key]
+
+        response = await self._make_request(
+            method=method, url=url, params=params, headers=self.__headers
+        )
+        if len(response["result"]["items"]) > 0:
+            if transfer_ids and isinstance(transfer_ids, int):
+                return Transfer(**response["result"]["items"][0])
+            return [Transfer(**transfer) for transfer in response["result"]["items"]]
+
+    async def create_check(
+        self, asset: Union[Assets, str], amount: Union[int, float]
+    ) -> Check:
+        """
+        Use this method to create a new check.
+        http://help.crypt.bot/crypto-pay-api#ZU9K
+
+        Args:
+            asset (Union[Assets, str]): Cryptocurrency alphabetic code. Supported assets: “USDT”, “TON”, “BTC”, “ETH”, “LTC”, “BNB”, “TRX” and “USDC” (and “JET” for testnet).
+            amount (Union[int, float]): Amount of the invoice in float. For example: 125.50
+
+        Returns:
+            Check: Check object
+        """
+        method = HTTPMethods.GET
+        url = f"{self.network}/api/createCheck"
+
+        params = {
+            "asset": asset,
+            "amount": amount,
+        }
+
+        for key, value in params.copy().items():
+            if value is None:
+                del params[key]
+
+        response = await self._make_request(
+            method=method, url=url, params=params, headers=self.__headers
+        )
+        return Check(**response["result"])
+
+    async def get_checks(
+        self,
+        asset: Optional[Union[Assets, str]] = None,
+        check_ids: Optional[Union[List[int], int]] = None,
+        status: Optional[Union[CheckStatus, str]] = None,
+        offset: Optional[int] = None,
+        count: Optional[int] = None,
+    ) -> Check:
+        """
+        Use this method to get checks created by your app.
+        http://help.crypt.bot/crypto-pay-api#nIwG
+
+        Args:
+            asset (Optional[Union[Assets, str]], optional): _description_. Defaults to None.
+            check_ids (Optional[Union[List[int], int]], optional): _description_. Defaults to None.
+            status (Optional[Union[CheckStatus, str]], optional): _description_. Defaults to None.
+            offset (Optional[int], optional): _description_. Defaults to None.
+            count (Optional[int], optional): _description_. Defaults to None.
+
+        Returns:
+            Check: Check object or list of Checks
+        """
+        method = HTTPMethods.GET
+        url = f"{self.network}/api/getChecks"
+
+        if check_ids and type(check_ids) == list:
+            check_ids = ",".join(map(str, check_ids))
+
+        params = {
+            "asset": asset,
+            "check_ids": check_ids,
+            "status": status,
+            "offset": offset,
+            "count": count,
+        }
+
+        for key, value in params.copy().items():
+            if value is None:
+                del params[key]
+
+        response = await self._make_request(
+            method=method, url=url, params=params, headers=self.__headers
+        )
+
+        if len(response["result"]["items"]) > 0:
+            if check_ids and isinstance(check_ids, int):
+                return Check(**response["result"]["items"][0])
+            return [Check(**check) for check in response["result"]["items"]]
+
+    async def delete_check(self, check_id: int) -> bool:
+        """
+        Use this method to delete checks created by your app.
+        http://help.crypt.bot/crypto-pay-api#nd2L
+
+        Args:
+            check_id (int): Check ID to be deleted.
+
+        Returns:
+            bool: Returns True on success.
+        """
+        method = HTTPMethods.GET
+        url = f"{self.network}/api/deleteCheck"
+
+        params = {"check_id": check_id}
+
+        response = await self._make_request(
+            method=method, url=url, params=params, headers=self.__headers
+        )
+        return response["result"]
 
     def check_signature(self, body_text: str, crypto_pay_signature: str) -> bool:
         """

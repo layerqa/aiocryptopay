@@ -47,3 +47,17 @@ class InvoiceStatus(StrEnum):
     ACTIVE = "active"
     PAID = "paid"
     EXPIRED = "expired"
+
+
+class CheckStatus(StrEnum):
+    """Check status"""
+
+    ACTIVE = "active"
+    ACTIVATED = "activated"
+
+
+class CurrencyType(StrEnum):
+    """Currency type"""
+
+    CRYPTO = "crypto"
+    FIAT = "fiat"

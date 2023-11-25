@@ -1,22 +1,20 @@
 from pydantic import BaseModel
 
-from typing import Union, Optional
+from typing import Union, Optional, List
 from datetime import datetime
 
-from ..const import Assets, PaidButtons, InvoiceStatus
+from ..const import Assets, PaidButtons, InvoiceStatus, CurrencyType
 
 
 class Invoice(BaseModel):
     invoice_id: int
     status: Union[InvoiceStatus, str]
     hash: str
-    asset: Union[Assets, str]
+    asset: Optional[Union[Assets, str]] = None
     amount: Union[int, float]
-    fee: Optional[Union[int, float]] = None
-    pay_url: str
+    bot_invoice_url: str
     description: Optional[str] = None
     created_at: datetime
-    usd_rate: Optional[Union[int, float]] = None
     allow_comments: bool
     allow_anonymous: bool
     expiration_date: Optional[str] = None
@@ -27,3 +25,11 @@ class Invoice(BaseModel):
     payload: Optional[str] = None
     paid_btn_name: Optional[Union[PaidButtons, str]] = None
     paid_btn_url: Optional[str] = None
+    currency_type: Union[CurrencyType, str]
+    fiat: Optional[str] = None
+    paid_asset: Optional[Union[Assets, str]] = None
+    paid_amount: Optional[Union[int, float]] = None
+    paid_usd_rate: Optional[Union[int, float]] = None
+    fee_asset: Optional[Union[Assets, str]] = None
+    fee_amount: Optional[Union[int, float]] = None
+    accepted_assets: Optional[Union[List[Union[Assets, str]], str]] = None
