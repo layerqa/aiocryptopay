@@ -32,7 +32,7 @@ from aiocryptopay import AioCryptoPay, Networks
 crypto = AioCryptoPay(token='1337:JHigdsaASq', network=Networks.MAIN_NET)
 
 invoice = await crypto.create_invoice(asset='TON', amount=1.5)
-print(invoice.pay_url)
+print(invoice.bot_invoice_url)
 
 # Create invoice in fiat
 fiat_invoice = await crypto.create_invoice(amount=5, fiat='USD', currency_type='fiat')
@@ -47,7 +47,7 @@ print(deleted_invoice)
 # Get amount in crypto by fiat summ
 amount = await crypto.get_amount_by_fiat(summ=100, asset='TON', target='USD')
 invoice = await crypto.create_invoice(asset='TON', amount=amount)
-print(invoice.pay_url)
+print(invoice.bot_invoice_url)
 ```
 
 **Create, get and delete check methods**
@@ -87,7 +87,7 @@ async def invoice_paid(update: Update, app) -> None:
 
 async def create_invoice(app) -> None:
     invoice = await crypto.create_invoice(asset='TON', amount=1.5)
-    print(invoice.pay_url)
+    print(invoice.bot_invoice_url)
 
 async def close_session(app) -> None:
     await crypto.close()
