@@ -17,9 +17,11 @@ from .models.invoice import Invoice
 from .models.transfer import Transfer
 from .models.update import Update
 from .models.check import Check
+from .models.app_stats import AppStats
 
 from .utils.exchange import get_rate, get_rate_summ
 
+from datetime import datetime
 from hmac import HMAC
 from hashlib import sha256
 from typing import Optional, Union, List, Callable
@@ -66,6 +68,41 @@ class AioCryptoPay(BaseClient):
             method=method, url=url, headers=self.__headers
         )
         return Profile(**response["result"])
+
+    async def get_stats(
+        self,
+        start_at: Optional[Union[datetime, str]] = None,
+        end_at: Optional[Union[datetime, str]] = None,
+    ) -> AppStats:
+        """
+        Use this method to get app statistics.
+        http://help.crypt.bot/crypto-pay-api#jvP3
+
+        Args:
+            start_at: (Optional[Union[datetime, str]]): Date from which start calculating statistics in ISO 8601 format. Defaults is current date minus 24 hours.
+            end_at: (Optional[Union[datetime, str]]): The date on which to finish calculating statistics in ISO 8601 format. Defaults is current date.
+
+        Returns:
+            AppStats: AppStats object
+        """
+        method = HTTPMethods.GET
+        url = f"{self.network}/api/getStats"
+
+        params = {
+            "start_at": start_at,
+            "end_at": end_at,
+        }
+
+        for key, value in params.copy().items():
+            if isinstance(value, datetime):
+                params[key] = str(value)
+            if value is None:
+                del params[key]
+
+        response = await self._make_request(
+            method=method, url=url, params=params, headers=self.__headers
+        )
+        return AppStats(**response["result"])
 
     async def get_balance(self) -> List[Balance]:
         """
@@ -348,7 +385,11 @@ class AioCryptoPay(BaseClient):
             return [Transfer(**transfer) for transfer in response["result"]["items"]]
 
     async def create_check(
-        self, asset: Union[Assets, str], amount: Union[int, float]
+        self,
+        asset: Union[Assets, str],
+        amount: Union[int, float],
+        pin_to_user_id: Optional[int] = None,
+        pin_to_username: Optional[str] = None,
     ) -> Check:
         """
         Use this method to create a new check.
@@ -357,7 +398,8 @@ class AioCryptoPay(BaseClient):
         Args:
             asset (Union[Assets, str]): Cryptocurrency alphabetic code. Supported assets: “USDT”, “TON”, “BTC”, “ETH”, “LTC”, “BNB”, “TRX” and “USDC” (and “JET” for testnet).
             amount (Union[int, float]): Amount of the invoice in float. For example: 125.50
-
+            pin_to_user_id (Optional[int], optional) ID of the user who will be able to activate the check.
+            pin_to_username (Optional[str], optional) A user with the specified username will be able to activate the check.
         Returns:
             Check: Check object
         """
@@ -367,6 +409,8 @@ class AioCryptoPay(BaseClient):
         params = {
             "asset": asset,
             "amount": amount,
+            "pin_to_user_id": pin_to_user_id,
+            "pin_to_username": pin_to_username,
         }
 
         for key, value in params.copy().items():
