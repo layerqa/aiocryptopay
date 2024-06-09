@@ -26,6 +26,8 @@ class Assets(StrEnum):
     BNB = "BNB"
     TRX = "TRX"
     LTC = "LTC"
+    GRAM = "GRAM"
+    NOT = "NOT"
 
     @classmethod
     def values(cls):
