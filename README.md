@@ -21,7 +21,7 @@ profile = await crypto.get_me()
 currencies = await crypto.get_currencies()
 balance = await crypto.get_balance()
 rates = await crypto.get_exchange_rates()
-stats = await api.get_stats()
+stats = await crypto.get_stats()
 
 print(profile, currencies, balance, rates, stats, sep='\n')
 ```
