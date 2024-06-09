@@ -491,15 +491,6 @@ class AioCryptoPay(BaseClient):
             method=method, url=url, params=params, headers=self.__headers
         )
         return response["result"]
-    
-    
-    async def __aenter__(self) -> None:
-        return self
-
-
-    async def __aexit__(self, exc_type, exc, tb) -> None:
-        await self.close()
-
 
     def check_signature(self, body_text: str, crypto_pay_signature: str) -> bool:
         """
@@ -574,3 +565,9 @@ class AioCryptoPay(BaseClient):
             return handler
 
         return decorator
+
+    async def __aenter__(self) -> None:
+        return self
+
+    async def __aexit__(self, exc_type, exc, tb) -> None:
+        await self.close()
