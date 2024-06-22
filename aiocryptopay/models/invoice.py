@@ -13,6 +13,8 @@ class Invoice(BaseModel):
     asset: Optional[Union[Assets, str]] = None
     amount: Union[int, float]
     bot_invoice_url: str
+    web_app_invoice_url: str
+    mini_app_invoice_url: str
     description: Optional[str] = None
     created_at: datetime
     allow_comments: bool
