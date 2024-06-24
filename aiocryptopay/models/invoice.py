@@ -32,6 +32,8 @@ class Invoice(BaseModel):
     paid_asset: Optional[Union[Assets, str]] = None
     paid_amount: Optional[Union[int, float]] = None
     paid_usd_rate: Optional[Union[int, float]] = None
+    paid_fiat_rate: Optional[Union[int, float]] = None
     fee_asset: Optional[Union[Assets, str]] = None
     fee_amount: Optional[Union[int, float]] = None
+    fee_in_usd: Optional[Union[int, float]] = None
     accepted_assets: Optional[Union[List[Union[Assets, str]], str]] = None
