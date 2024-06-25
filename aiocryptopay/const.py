@@ -29,6 +29,7 @@ class Assets(StrEnum):
     GRAM = "GRAM"
     NOT = "NOT"
     MY = "MY"
+    SOL = "SOL"
 
     @classmethod
     def values(cls):
