@@ -28,10 +28,39 @@ class Assets(StrEnum):
     LTC = "LTC"
     GRAM = "GRAM"
     NOT = "NOT"
+    MY = "MY"
+    SOL = "SOL"
 
     @classmethod
     def values(cls):
         return list(map(lambda asset: asset.value, cls))
+
+
+class Fiat(StrEnum):
+    RUB = "RUB"
+    USD = "USD"
+    EUR = "EUR"
+    BYN = "BYN"
+    UAH = "UAH"
+    KZT = "KZT"
+    UZS = "UZS"
+    GEL = "GEL"
+    TRY = "TRY"
+    AMD = "AMD"
+    THB = "THB"
+    INR = "INR"
+    BRL = "BRL"
+    IDR = "IDR"
+    AZN = "AZN"
+    AED = "AED"
+    PLN = "PLN"
+    ILS = "ILS"
+    KGS = "KGS"
+    TJS = "TJS"
+
+    @classmethod
+    def values(cls):
+        return list(map(lambda fiat: fiat.value, cls))
 
 
 class PaidButtons(StrEnum):
