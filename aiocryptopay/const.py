@@ -30,6 +30,7 @@ class Assets(StrEnum):
     NOT = "NOT"
     MY = "MY"
     SOL = "SOL"
+    DOGS = "DOGS"
 
     @classmethod
     def values(cls):
