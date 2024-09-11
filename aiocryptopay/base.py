@@ -42,10 +42,12 @@ class BaseClient:
             :return: status and result or exception
         """
         session = self.get_session()
-
-        async with session.request(method, url, **kwargs) as response:
-            response = await response.json(content_type="application/json")
-        return self._validate_response(response)
+        try:
+            async with session.request(method, url, **kwargs) as response:
+                response = await response.json(content_type="application/json")
+            return self._validate_response(response)
+        finally:
+            await session.close()
 
     @staticmethod
     def _validate_response(response: dict) -> dict:
