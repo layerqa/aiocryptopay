@@ -31,6 +31,9 @@ class Assets(StrEnum):
     MY = "MY"
     SOL = "SOL"
     DOGS = "DOGS"
+    HMSTR = "HMSTR"
+    CATI = "CATI"
+    DOGE = "DOGE"
 
     @classmethod
     def values(cls):
