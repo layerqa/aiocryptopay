@@ -37,3 +37,11 @@ class Invoice(BaseModel):
     fee_amount: Optional[Union[int, float]] = None
     fee_in_usd: Optional[Union[int, float]] = None
     accepted_assets: Optional[Union[List[Union[Assets, str]], str]] = None
+    swap_to: Optional[Union[Assets, str]] = None
+    is_swapped: Optional[bool] = None
+    swapped_uid: Optional[str] = None
+    swapped_to: Optional[Union[Assets, str]] = None
+    swapped_rate: Optional[Union[int, float]] = None
+    swapped_output: Optional[Union[int, float]] = None
+    swapped_usd_rate: Optional[Union[int, float]] = None
+    swapped_usd_amount: Optional[Union[int, float]] = None

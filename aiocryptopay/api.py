@@ -167,6 +167,7 @@ class AioCryptoPay(BaseClient):
         fiat: Optional[str] = None,
         currency_type: Optional[Union[CurrencyType, str]] = None,
         accepted_assets: Optional[Union[List[Union[Assets, str]], str]] = None,
+        swap_to: Optional[Union[Assets, str]] = None,
     ) -> Invoice:
         """
         Use this method to create a new invoice.
@@ -186,6 +187,7 @@ class AioCryptoPay(BaseClient):
             fiat (Optional[str], optional): Fiat currency code if the field currency_type has fiat as a value. Supported fiat currencies: All fiats in CryptoBot
             currency_type (Optional[Union[CurrencyType, str]], optional): Type of the price, can be “crypto” or “fiat”. Default is crypto.
             accepted_assets (Optional[Union[List[Union[Assets, str]], str]], optional): Assets which can be used to pay the invoice if the field fiat has a value. Supported assets: “USDT”, “TON”, “BTC” (and “JET” for testnet). Defaults to all currencies.
+            swap_to (Optional[Union[Assets, str]], optional): Asset to swap to after payment. Supported assets: “USDT”, “TON”, “BTC”, “ETH”, “LTC”, “BNB”, “TRX” and “USDC”.
 
         Returns:
             Invoice: Invoice object
@@ -210,6 +212,7 @@ class AioCryptoPay(BaseClient):
             "fiat": fiat,
             "currency_type": currency_type,
             "accepted_assets": accepted_assets,
+            "swap_to": swap_to,
         }
 
         for key, value in params.copy().items():
